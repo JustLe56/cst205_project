@@ -21,8 +21,13 @@ stored_url = []
 def update_url(new_url):
     stored_url.append(new_url)
 
+#initial landing page asking user to login/sign up
+@app.route('/')
+def landing():
+    return render_template("landing.html")
+
 # home route
-@app.route('/', methods=('GET','POST'))
+@app.route('/home', methods=('GET','POST'))
 def home():
     form = query()
     if form.validate_on_submit():
@@ -44,7 +49,7 @@ def login():
         if request.form['username'] != 'admin' or request.form['password'] != 'admin':
             error = 'Invalid Credentials. Please try again.'
         else:
-            return redirect(url_for('profile'))
+            return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
 @app.route('/profile')
