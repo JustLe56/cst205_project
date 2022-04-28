@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect
+from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -35,3 +35,18 @@ def home():
 def download_playlist():
     print(f'url: {stored_url}')
     return render_template('result.html', video=stored_url[0])
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            return redirect(url_for('profile'))
+    return render_template('login.html', error=error)
+
+@app.route('/profile')
+def profile():
+    return 'Welcome User'
