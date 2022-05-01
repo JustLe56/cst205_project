@@ -1,6 +1,10 @@
 # Uses https://stackoverflow.com/questions/68945080/pytube-exceptions-regexmatcherror-get-throttling-function-name-could-not-find?answertab=modifieddesc#tab-top
 # Above link gets around get throttling function_name could not find match for multiple
 # Go to your env folder into /lib/pythonX.X/site-packages/pytube and you will find the mentioned file from the SO post.
+
+# If you are on MacOS and getting CERTIFICATE_VERIFY_FAILED error
+# use https://stackoverflow.com/questions/40684543/how-to-make-python-use-ca-certificates-from-mac-os-truststore#:~:text=cd%20/Applications/Python%5C%203.6/%0A./Install%5C%20Certificates.command
+
 from flask import Flask, render_template, redirect, url_for, request, send_file
 from io import BytesIO
 from pytube import YouTube
