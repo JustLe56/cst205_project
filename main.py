@@ -41,7 +41,7 @@ def download_playlist():
     print(f'url: {stored_url}')
     return render_template('result.html', video=stored_url[0])
 
-
+# Pre-defined user login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -49,9 +49,15 @@ def login():
         if request.form['username'] != 'admin' or request.form['password'] != 'admin':
             error = 'Invalid Credentials. Please try again.'
         else:
-            return redirect(url_for('home'))
+            return redirect(url_for('profile'))
     return render_template('login.html', error=error)
 
+# Profile route
 @app.route('/profile')
 def profile():
-    return 'Welcome User'
+    return render_template('profile.html')
+
+# View user's downloaded media route
+@app.route('/my_downloads')
+def downloaded():
+    return render_template('my_downloads.html')

@@ -1,0 +1,37 @@
+<!-- Open Source BS Template: https://www.bootdey.com/snippets/view/profile-photos -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+</head>
+<body>
+
+    <div id="content" class="container p-0">
+        <div class="profile-header">
+            <div class="profile-header-cover"></div>
+            <div class="profile-header-content">
+                <div class="profile-header-img">
+                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="" />
+                </div>
+                <div class="profile-header-info">
+                    <h4 class="m-t-sm">Youtube Downloader</h4>
+                    <p class="m-b-sm">Admin</p>
+                    <a href="{{ url_for('home') }}" class="btn btn-xs btn-primary mb-4" data-toggle="tab">Download</a>
+                    <a href="{{ url_for('downloaded') }}" class="btn btn-xs btn-primary mb-4" data-toggle="tab">Downloaded</a>
+                    <a href="{{ url_for('landing') }}" class="btn btn-xs btn-danger mb-4" data-toggle="tab">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>More info will be stored here</p> 
+
+
+</body>
+</html>
