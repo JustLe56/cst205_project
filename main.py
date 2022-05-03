@@ -7,7 +7,9 @@
 
 from flask import Flask, render_template, redirect, url_for, request, send_file
 from io import BytesIO
-from pytube import YouTube
+import zipfile 
+import os
+from pytube import YouTube, Playlist
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -38,28 +40,61 @@ def landing():
 # home route
 @app.route('/home', methods=('GET','POST'))
 def home():
+    return render_template("home.html")
+
+# download single video route
+@app.route('/download/video' , methods=['GET', 'POST'])
+def download_video():
     form = query()
-    if form.validate_on_submit():
-        update_url(form.url.data) 
-        return redirect(url_for('download_playlist'), code=307)
-    return render_template("home.html", form=form)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            update_url(form.url.data) 
+            buffer = BytesIO() # Declaring the buffer
+            user_video = YouTube(stored_url[0]) # Getting the URL
+            video = user_video.streams.filter(file_extension='mp4')[0] # Store the video into a variable
+            video_title = user_video.title
+            video.stream_to_buffer(buffer)
+            buffer.seek(0)
+            return send_file(buffer, as_attachment=True, download_name=f"{video_title}.mp4", mimetype="video/mp4")
+    return render_template('download_video.html',form = form)
 
 # download playlist route
 @app.route('/download/playlist' , methods=['GET', 'POST'])
 def download_playlist():
-    print(f"method: {request.method}")
+    form = query()
     if request.method == "POST":
-        buffer = BytesIO() # Declaring the buffer
-        url = YouTube(stored_url[0]) # Getting the URL
-        #itag = request.form.get("itag") # Get the video resolution 
-        video = url.streams.filter(file_extension='mp4')[0] # Store the video into a variable
-        video.stream_to_buffer(buffer)
-        buffer.seek(0)
-        return send_file(buffer, as_attachment=True, download_name="Video - YT2Video.mp4", mimetype="video/mp4")
-    return redirect(url_for("home"))
+        form = query()
+        
+        if form.validate_on_submit():
+            filenames = []
+            zip_path = "videos.zip"
+            update_url(form.url.data) 
+            user_playlist = Playlist(stored_url[0]) # Getting the URL
 
-    return render_template('result.html', link=stored_url[0])
+            #iterate over each video and download
+            for index,video in enumerate(user_playlist.videos):
+                video = video.streams.filter(file_extension='mp4')[0] # Store the video into a variable
+                filenames.append(video.title)
+                video.download()
 
+            #iterate over each video and add to zipfile
+            with zipfile.ZipFile(zip_path, mode="w") as archive:
+                for filename in filenames:
+                    archive.write(f'{filename}.mp4')
+            
+            #create buffer to store zip
+            return_data = BytesIO()
+            with open(zip_path, 'rb') as fo:
+                return_data.write(fo.read())
+            return_data.seek(0)
+
+            #clean up downloaded files
+            for file in filenames:
+                os.remove(f'{file}.mp4')
+            os.remove(zip_path)
+
+            return send_file(return_data, as_attachment=True, download_name=f"playlist.zip")
+    return render_template('download_playlist.html',form = form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

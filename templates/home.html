@@ -9,15 +9,8 @@
 	{{ bootstrap.load_css() }}
   </head>
   <body>
-	<h2>Enter URL to download YouTube Video</h2>
-	<div>
-		<form action="/home" method="POST">
-			{{ form.csrf_token}}
-			{{ form.url.label }} 
-            {{ form.url(size=32) }}
-			<input type="submit" value="Submit" class="btn btn-primary">
-		</form>
-	</div>
+	<a href="/download/video">Download a single video</a>
+	<a href="/download/playlist">Download a playlist</a>
 	<br>
 	<br>
   </body>
