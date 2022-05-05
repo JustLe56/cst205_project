@@ -23,3 +23,4 @@ CST205 group 7335:
 - Better template (Makes website more appealing)
 - Sessions (Keeps user logged in)
 - Profile Page (User can express themselves)
+

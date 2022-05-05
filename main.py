@@ -1,4 +1,15 @@
-from flask import Flask, render_template, redirect, url_for, request
+# Uses https://stackoverflow.com/questions/68945080/pytube-exceptions-regexmatcherror-get-throttling-function-name-could-not-find?answertab=modifieddesc#tab-top
+# Above link gets around get throttling function_name could not find match for multiple
+# Go to your env folder into /lib/pythonX.X/site-packages/pytube and you will find the mentioned file from the SO post.
+
+# If you are on MacOS and getting CERTIFICATE_VERIFY_FAILED error
+# use https://stackoverflow.com/questions/40684543/how-to-make-python-use-ca-certificates-from-mac-os-truststore#:~:text=cd%20/Applications/Python%5C%203.6/%0A./Install%5C%20Certificates.command
+
+from flask import Flask, render_template, redirect, url_for, request, send_file, session
+from io import BytesIO
+import zipfile 
+import os
+from pytube import YouTube, Playlist
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -24,40 +35,98 @@ def update_url(new_url):
 #initial landing page asking user to login/sign up
 @app.route('/')
 def landing():
+    if session.get('username'):
+        return redirect("/home")
     return render_template("landing.html")
 
 # home route
 @app.route('/home', methods=('GET','POST'))
 def home():
+    if not session.get('username'):
+        return redirect("/login")
+    return render_template("home.html")
+
+# download single video route
+@app.route('/download/video' , methods=['GET', 'POST'])
+def download_video():
+    if not session.get('username'):
+        return redirect("/login")
     form = query()
-    if form.validate_on_submit():
-        update_url(form.url.data) 
-        return redirect('/download/playlist')
-    return render_template("home.html", form=form)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            update_url(form.url.data) 
+            buffer = BytesIO() # Declaring the buffer
+            user_video = YouTube(stored_url[0]) # Getting the URL
+            video = user_video.streams.filter(file_extension='mp4')[0] # Store the video into a variable
+            video_title = user_video.title
+            video.stream_to_buffer(buffer)
+            buffer.seek(0)
+            return send_file(buffer, as_attachment=True, download_name=f"{video_title}.mp4", mimetype="video/mp4")
+    return render_template('download_video.html',form = form)
 
 # download playlist route
-@app.route('/download/playlist')
+@app.route('/download/playlist' , methods=['GET', 'POST'])
 def download_playlist():
-    print(f'url: {stored_url}')
-    return render_template('result.html', video=stored_url[0])
+    if not session.get('username'):
+        return redirect("/login")
+    form = query()
+    if request.method == "POST":
+        form = query()
+        if form.validate_on_submit():
+            filenames = []
+            zip_path = "videos.zip"
+            update_url(form.url.data) 
+            user_playlist = Playlist(stored_url[0]) # Getting the URL
+
+            #iterate over each video and download
+            for index,video in enumerate(user_playlist.videos):
+                video = video.streams.filter(file_extension='mp4')[0] # Store the video into a variable
+                filenames.append(video.title)
+                video.download()
+
+            #iterate over each video and add to zipfile
+            with zipfile.ZipFile(zip_path, mode="w") as archive:
+                for filename in filenames:
+                    archive.write(f'{filename}.mp4')
+            
+            #create buffer to store zip
+            return_data = BytesIO()
+            with open(zip_path, 'rb') as fo:
+                return_data.write(fo.read())
+            return_data.seek(0)
+
+            #clean up downloaded files
+            for file in filenames:
+                os.remove(f'{file}.mp4')
+            os.remove(zip_path)
+
+            return send_file(return_data, as_attachment=True, download_name=f"playlist.zip")
+    return render_template('download_playlist.html',form = form)
 
 # Pre-defined user login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if session.get('username'):
+        return redirect("/home")
     error = None
     if request.method == 'POST':
         if request.form['username'] != 'admin' or request.form['password'] != 'admin':
             error = 'Invalid Credentials. Please try again.'
         else:
+            session['username'] = request.form['username'] #update session with username
             return redirect(url_for('profile'))
     return render_template('login.html', error=error)
 
 # Profile route
 @app.route('/profile')
 def profile():
+    if not session.get('username'):
+        return redirect("/login")
     return render_template('profile.html')
 
 # View user's downloaded media route
 @app.route('/my_downloads')
 def downloaded():
+    if not session.get('username'):
+        return redirect("/login")
     return render_template('my_downloads.html')
