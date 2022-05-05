@@ -5,7 +5,7 @@
 # If you are on MacOS and getting CERTIFICATE_VERIFY_FAILED error
 # use https://stackoverflow.com/questions/40684543/how-to-make-python-use-ca-certificates-from-mac-os-truststore#:~:text=cd%20/Applications/Python%5C%203.6/%0A./Install%5C%20Certificates.command
 
-from flask import Flask, render_template, redirect, url_for, request, send_file
+from flask import Flask, render_template, redirect, url_for, request, send_file, session
 from io import BytesIO
 import zipfile 
 import os
@@ -35,16 +35,22 @@ def update_url(new_url):
 #initial landing page asking user to login/sign up
 @app.route('/')
 def landing():
+    if session.get('username'):
+        return redirect("/home")
     return render_template("landing.html")
 
 # home route
 @app.route('/home', methods=('GET','POST'))
 def home():
+    if not session.get('username'):
+        return redirect("/login")
     return render_template("home.html")
 
 # download single video route
 @app.route('/download/video' , methods=['GET', 'POST'])
 def download_video():
+    if not session.get('username'):
+        return redirect("/login")
     form = query()
     if request.method == "POST":
         if form.validate_on_submit():
@@ -61,10 +67,11 @@ def download_video():
 # download playlist route
 @app.route('/download/playlist' , methods=['GET', 'POST'])
 def download_playlist():
+    if not session.get('username'):
+        return redirect("/login")
     form = query()
     if request.method == "POST":
         form = query()
-        
         if form.validate_on_submit():
             filenames = []
             zip_path = "videos.zip"
@@ -99,20 +106,27 @@ def download_playlist():
 # Pre-defined user login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if session.get('username'):
+        return redirect("/home")
     error = None
     if request.method == 'POST':
         if request.form['username'] != 'admin' or request.form['password'] != 'admin':
             error = 'Invalid Credentials. Please try again.'
         else:
+            session['username'] = request.form['username'] #update session with username
             return redirect(url_for('profile'))
     return render_template('login.html', error=error)
 
 # Profile route
 @app.route('/profile')
 def profile():
+    if not session.get('username'):
+        return redirect("/login")
     return render_template('profile.html')
 
 # View user's downloaded media route
 @app.route('/my_downloads')
 def downloaded():
+    if not session.get('username'):
+        return redirect("/login")
     return render_template('my_downloads.html')
