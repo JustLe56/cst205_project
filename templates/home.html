@@ -1,17 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
+<head>
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Home</title>
     <link rel="stylesheet" href="style.css">
 	{{ bootstrap.load_css() }}
-  </head>
-  <body>
-	<a href="/download/video">Download a single video</a>
+<style>
+.container {
+  position: relative;
+}
+
+.bottomleft {
+  position: absolute;
+  bottom: 8px;
+  left: 16px;
+  font-size: 18px;
+}
+.topleft {
+  position: absolute;
+  bottom: 525px;
+  left: 16px;
+  font-size: 20px;
+}
+img { 
+  width: 100%;
+  height: auto;
+  opacity: .9;
+}
+a {color:white; font-size: 1.0em;}
+p {color:white; font-size: .7em;}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <img src="https://www.xda-developers.com/files/2018/03/youtube-dark.png" alt="Cinque Terre" width="1000" height="300">
+  <div class="bottomleft">
+    <p> YouTube Downloader</p>
+    <p> ---by CST205 group 7335</p>
+  </div>
+  <div class="topleft">
+    <a href="/download/video">Download a single video</a>
+    <p> </p>
 	<a href="/download/playlist">Download a playlist</a>
-	<br>
-	<br>
-  </body>
+  </div>
+</div>
+
+</body>
 </html>
