@@ -1,14 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Result</title>
-    <link rel="stylesheet" href="style.css">
-	  {{ bootstrap.load_css() }}
-  </head>
-  <body>   
-      <a href='/login'>Login</a>
-  </body>
+<head>
+<title>Result</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<link rel="stylesheet" href="style.css">
+	{{ bootstrap.load_css() }}
+
+<style>
+.container {
+  position: relative;
+}
+
+.bottomleft {
+  position: absolute;
+  bottom: 8px;
+  left: 16px;
+  font-size: 18px;
+}
+.topleft {
+  position: absolute;
+  bottom: 450px;
+  left: 16px;
+  font-size: 20px;
+}
+img { 
+  width: 100%;
+  height: auto;
+  opacity: .9;
+}
+a {color:white; font-size: 1.3em;}
+p {color:white; font-size: .7em;}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <img src="https://www.xda-developers.com/files/2018/03/youtube-dark.png" alt="Cinque Terre" width="1000" height="300">
+  <div class="bottomleft">
+    <p> YouTube Downloader</p>
+    <p> by CST205 group 7335</p>
+  </div>
+  <div class="topleft">
+    <a href='/login'>Login</a>
+  </div>
+</div>
+
+</body>
 </html>
