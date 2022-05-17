@@ -9,11 +9,10 @@
 	  {{ bootstrap.load_css() }}
   </head>
   <body>
-    <h2>Enter URL to download a YouTube playlist</h2>
-    <div>
+    <div class="text-center">
+      <h2>Enter URL to download a YouTube playlist</h2>
       <form action="/download/playlist" method="POST">
         {{ form.csrf_token}}
-        {{ form.url.label }} 
         {{ form.url(size=32) }}
         <input type="submit" value="Submit" class="btn btn-primary">
       </form>
