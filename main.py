@@ -1,6 +1,7 @@
 # Uses https://stackoverflow.com/questions/68945080/pytube-exceptions-regexmatcherror-get-throttling-function-name-could-not-find?answertab=modifieddesc#tab-top
 # Above link gets around get throttling function_name could not find match for multiple
 # Go to your env folder into /lib/pythonX.X/site-packages/pytube and you will find the mentioned file from the SO post.
+# fixed as of pytube 12.1.0
 
 # If you are on MacOS and getting CERTIFICATE_VERIFY_FAILED error
 # use https://stackoverflow.com/questions/40684543/how-to-make-python-use-ca-certificates-from-mac-os-truststore#:~:text=cd%20/Applications/Python%5C%203.6/%0A./Install%5C%20Certificates.command
@@ -46,6 +47,13 @@ def home():
         return redirect("/login")
     return render_template("home.html")
 
+# logout route
+@app.route('/logout', methods=('GET','POST'))
+def logout():
+    session.clear()
+    return redirect("/login")
+
+
 # download single video route
 @app.route('/download/video' , methods=['GET', 'POST'])
 def download_video():
@@ -54,15 +62,16 @@ def download_video():
     form = query()
     if request.method == "POST":
         if form.validate_on_submit():
-            update_url(form.url.data) 
+            if ("watch" not in form.url.data):
+                return render_template('download_video.html',form = form,error="Invalid video.")
             buffer = BytesIO() # Declaring the buffer
-            user_video = YouTube(stored_url[0]) # Getting the URL
+            user_video = YouTube(form.url.data) # Getting the URL
             video = user_video.streams.filter(file_extension='mp4')[0] # Store the video into a variable
             video_title = user_video.title
             video.stream_to_buffer(buffer)
             buffer.seek(0)
             return send_file(buffer, as_attachment=True, download_name=f"{video_title}.mp4", mimetype="video/mp4")
-    return render_template('download_video.html',form = form)
+    return render_template('download_video.html',form = form,error=None)
 
 # download playlist route
 @app.route('/download/playlist' , methods=['GET', 'POST'])
@@ -73,11 +82,14 @@ def download_playlist():
     if request.method == "POST":
         form = query()
         if form.validate_on_submit():
+            update_url(form.url.data) 
+            if ("playlist" not in form.url.data):
+                return render_template('download_playlist.html',form = form,error="Invalid playlist.")
             filenames = []
             zip_path = "videos.zip"
-            update_url(form.url.data) 
-            user_playlist = Playlist(stored_url[0]) # Getting the URL
-
+            
+            user_playlist = Playlist(form.url.data) # Getting the URL
+            print(user_playlist.videos)
             #iterate over each video and download
             for index,video in enumerate(user_playlist.videos):
                 video = video.streams.filter(file_extension='mp4')[0] # Store the video into a variable
@@ -101,7 +113,7 @@ def download_playlist():
             os.remove(zip_path)
 
             return send_file(return_data, as_attachment=True, download_name=f"playlist.zip")
-    return render_template('download_playlist.html',form = form)
+    return render_template('download_playlist.html',form = form,error=None)
 
 # Pre-defined user login route
 @app.route('/login', methods=['GET', 'POST'])

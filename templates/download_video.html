@@ -11,6 +11,9 @@
   <body>
     <div class="text-center">
       <h2>Enter URL to download a YouTube video</h2>
+      {% if error %}
+          <p class="alert alert-warning"><strong>Error:</strong> {{ error }}
+      {% endif %}
       <form action="/download/video" method="POST">
         {{ form.csrf_token}}
         {{ form.url(size=32) }}
