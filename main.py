@@ -1,3 +1,23 @@
+# Authors: Jose Barroso A., Justin Le, Runcheng Zheng
+# Date: May 18, 2022
+# Course: CST 205
+# Title: YouTube Downloader
+# Abstract: This program allows a pre-defined user to login and is 
+        # then taken to their profile. From the profile the user can
+        # see suggested videos to download or click a link to download
+        # any video or playlist of their choice using a YouTube url. 
+
+# Jose Barroso A: Worked on login page with authentication, profile page, and 
+        # being able to navigate backwards.
+# Justin Le: Worked on the API, being able to download the videos/playlists, and 
+        # creating sessions.
+# Runcheng Zheng: Worked setting up the html files and making the website look
+        #  more appealing. 
+
+# Github: https://github.com/JustLe56/cst205_project/tree/justin_download
+
+# Trello: https://trello.com/b/NTL5ZdWY/cst205group7335
+
 # Uses https://stackoverflow.com/questions/68945080/pytube-exceptions-regexmatcherror-get-throttling-function-name-could-not-find?answertab=modifieddesc#tab-top
 # Above link gets around get throttling function_name could not find match for multiple
 # Go to your env folder into /lib/pythonX.X/site-packages/pytube and you will find the mentioned file from the SO post.
